@@ -20,10 +20,6 @@ const nextConfig = {
       },
     ],
   },
-  // PWA optimizations
-  experimental: {
-    optimizeCss: true,
-  },
 };
 
 module.exports = nextConfig;

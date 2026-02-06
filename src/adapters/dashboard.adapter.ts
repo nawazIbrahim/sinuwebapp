@@ -125,17 +125,17 @@ export class DashboardAdapter {
     // Update group list visibility and display order
     // First, map modules by their ID for easy lookup
     const modulesById = new Map(
-      dashboardData.modules.map((module) => [module.id, module])
+      dashboardData.modules.map((moduleItem) => [moduleItem.id, moduleItem])
     );
 
     // Reorder modules based on the new order
     const updatedModules = updatedState.modulesOrder
       .map((id, index) => {
-        const module = modulesById.get(id);
-        if (!module) return null;
+        const moduleItem = modulesById.get(id);
+        if (!moduleItem) return null;
         return {
-          ...module.originalData,
-          isVisible: updatedState.modules[module.id] ?? module.enabled,
+          ...moduleItem.originalData,
+          isVisible: updatedState.modules[moduleItem.id] ?? moduleItem.enabled,
           displayOrder: index + 1, // Update display order (1-based)
         };
       })

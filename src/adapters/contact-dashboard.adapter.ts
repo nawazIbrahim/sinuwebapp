@@ -1,4 +1,4 @@
-import { ContactApiResponse, ContactFieldItem } from '@/types/contact';
+import { ContactApiResponse, ContactField } from '@/types/contact';
 
 /**
  * Contact Dashboard Field Type
@@ -10,7 +10,7 @@ export interface ContactDashboardField {
   value: string;
   enabled: boolean;
   displayOrder: number;
-  originalData: ContactFieldItem;
+  originalData: ContactField;
 }
 
 /**
@@ -67,7 +67,7 @@ export class ContactDashboardAdapter {
           displayOrder: index + 1,
         };
       })
-      .filter((f) => f !== null) as ContactFieldItem[];
+      .filter((f) => f !== null) as ContactField[];
 
     return { fieldList: updatedFields };
   }

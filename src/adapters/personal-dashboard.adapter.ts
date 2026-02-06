@@ -1,4 +1,4 @@
-import { PersonalApiResponse, PersonalFieldItem } from '@/types/personal';
+import { PersonalApiResponse, PersonalField } from '@/types/personal';
 
 /**
  * Personal Dashboard Field Type
@@ -10,7 +10,7 @@ export interface PersonalDashboardField {
   value: string;
   enabled: boolean;
   displayOrder: number;
-  originalData: PersonalFieldItem;
+  originalData: PersonalField;
 }
 
 /**
@@ -87,7 +87,7 @@ export class PersonalDashboardAdapter {
           displayOrder: index + 1, // Update display order (1-based)
         };
       })
-      .filter((f) => f !== null) as PersonalFieldItem[];
+      .filter((f) => f !== null) as PersonalField[];
 
     console.log('Updated fields:', updatedFields);
 

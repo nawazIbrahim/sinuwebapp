@@ -101,6 +101,7 @@ export class ProfileAdapter {
       .map((group) => ({
         group: group.group,
         label: group.label,
+        value: group.value,
         subtitle: group.subtitle,
         icon: group.icon,
         color: group.color,

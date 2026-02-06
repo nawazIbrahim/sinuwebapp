@@ -10,25 +10,26 @@ interface ModuleField {
   value: string;
   enabled: boolean;
   displayOrder: number;
+  [key: string]: any; // Allow additional properties for specific module types
 }
 
-interface ModuleFieldsSectionProps {
+interface ModuleFieldsSectionProps<T extends ModuleField = ModuleField> {
   title: string;
-  fields: ModuleField[];
+  fields: T[];
   onToggle: (id: string, enabled: boolean) => void;
   onValueChange: (id: string, value: string) => void;
-  onReorder: (fields: ModuleField[]) => void;
+  onReorder: (fields: T[]) => void;
   getFieldDescription: (field: string) => string;
 }
 
-export function ModuleFieldsSection({
+export function ModuleFieldsSection<T extends ModuleField = ModuleField>({
   title,
   fields,
   onToggle,
   onValueChange,
   onReorder,
   getFieldDescription,
-}: ModuleFieldsSectionProps) {
+}: ModuleFieldsSectionProps<T>) {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     if (result.source.index === result.destination.index) return;

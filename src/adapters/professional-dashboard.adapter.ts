@@ -1,4 +1,4 @@
-import { ProfessionalApiResponse, ProfessionalFieldItem } from '@/types/professional';
+import { ProfessionalApiResponse, ProfessionalField } from '@/types/professional';
 
 export interface ProfessionalDashboardField {
   id: string;
@@ -7,7 +7,7 @@ export interface ProfessionalDashboardField {
   value: string;
   enabled: boolean;
   displayOrder: number;
-  originalData: ProfessionalFieldItem;
+  originalData: ProfessionalField;
 }
 
 export interface ProfessionalDashboardData {
@@ -53,7 +53,7 @@ export class ProfessionalDashboardAdapter {
           displayOrder: index + 1,
         };
       })
-      .filter((f) => f !== null) as ProfessionalFieldItem[];
+      .filter((f) => f !== null) as ProfessionalField[];
     return { fieldList: updatedFields };
   }
 

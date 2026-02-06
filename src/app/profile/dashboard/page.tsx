@@ -199,11 +199,11 @@ export default function ProfileDashboardPage() {
   // Apply module state to data and reorder based on state.modulesOrder
   const modulesWithState = state.modulesOrder
     .map((id) => {
-      const module = data.modules.find((m) => m.id === id);
-      if (!module) return null;
+      const moduleItem = data.modules.find((m) => m.id === id);
+      if (!moduleItem) return null;
       return {
-        ...module,
-        enabled: state.modules[module.id] ?? module.enabled,
+        ...moduleItem,
+        enabled: state.modules[moduleItem.id] ?? moduleItem.enabled,
       };
     })
     .filter((m) => m !== null) as typeof data.modules;

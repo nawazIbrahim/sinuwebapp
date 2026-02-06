@@ -1,4 +1,4 @@
-import { AddressApiResponse, AddressFieldItem } from '@/types/address';
+import { AddressApiResponse, AddressField } from '@/types/address';
 
 export interface AddressDashboardField {
   id: string;
@@ -7,7 +7,7 @@ export interface AddressDashboardField {
   value: string;
   enabled: boolean;
   displayOrder: number;
-  originalData: AddressFieldItem;
+  originalData: AddressField;
 }
 
 export interface AddressDashboardData {
@@ -53,7 +53,7 @@ export class AddressDashboardAdapter {
           displayOrder: index + 1,
         };
       })
-      .filter((f) => f !== null) as AddressFieldItem[];
+      .filter((f) => f !== null) as AddressField[];
     return { fieldList: updatedFields };
   }
 
