@@ -40,9 +40,15 @@ const FIELD_CONFIG: Record<string, {
   },
   email: {
     icon: 'email',
-    iconColor: '#DC2626', // Red from Figma
-    iconBgColor: '#FEF2F2', // Alice Blue (light pink/red) from Figma
+    iconColor: '#DC2626',
+    iconBgColor: '#FEF2F2',
     actionIcon: 'send',
+  },
+  fax: {
+    icon: 'print',
+    iconColor: '#64748B',
+    iconBgColor: '#F1F5F9',
+    actionIcon: 'call',
   },
 };
 

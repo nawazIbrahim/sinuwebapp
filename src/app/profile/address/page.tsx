@@ -17,26 +17,53 @@ import { AdaptedAddressData } from '@/types/address';
 export default function AddressPage() {
   const [addressData, setAddressData] = useState<AdaptedAddressData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const fetchData = async () => {
+    console.log('=== ADDRESS PAGE LOADING ===');
+    setLoading(true);
+    
+    try {
+      const response = await AddressApiService.getAddressData();
+      console.log('[AddressPage] API Response:', response);
+      
+      const adapted = AddressAdapter.toUI(response);
+      console.log('[AddressPage] Adapted Data:', adapted);
+      
+      setAddressData(adapted);
+    } catch (error) {
+      console.error('[AddressPage] Error fetching address data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('[AddressPage] Fetching address data...');
-        const response = await AddressApiService.getAddressData();
-        console.log('[AddressPage] API Response:', response);
-        
-        const adapted = AddressAdapter.toUI(response);
-        console.log('[AddressPage] Adapted Data:', adapted);
-        
-        setAddressData(adapted);
-      } catch (error) {
-        console.error('[AddressPage] Error fetching address data:', error);
-      } finally {
-        setLoading(false);
+    fetchData();
+  }, [refreshKey]);
+
+  // Check for updates from dashboard
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const shouldRefresh = sessionStorage.getItem('address-data-updated');
+      if (shouldRefresh === 'true') {
+        console.log('=== ADDRESS DATA UPDATED - REFETCHING ===');
+        sessionStorage.removeItem('address-data-updated');
+        setRefreshKey(prev => prev + 1);
       }
     };
+    checkForUpdates();
+    const interval = setInterval(checkForUpdates, 500);
+    return () => clearInterval(interval);
+  }, []);
 
-    fetchData();
+  // Refresh on page visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) setRefreshKey(prev => prev + 1);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   if (loading) {

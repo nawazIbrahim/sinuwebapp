@@ -17,33 +17,62 @@ import { AdaptedSocialMediaData } from '@/types/socialMedia';
 export default function SocialMediaPage() {
   const [socialMediaData, setSocialMediaData] = useState<AdaptedSocialMediaData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
+  // Extracted fetch function for reuse
+  const fetchData = async () => {
+    try {
+      console.log('=== SOCIAL MEDIA PAGE LOADING ===');
+      const response = await SocialMediaApiService.getSocialMediaData();
+      console.log('[SocialMediaPage] API Response:', response);
+      
+      const adapted = SocialMediaAdapter.toUI(response);
+      console.log('[SocialMediaPage] Adapted Data:', adapted);
+      
+      setSocialMediaData(adapted);
+    } catch (error) {
+      console.error('[SocialMediaPage] Error fetching social media data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load and refresh on refreshKey change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('[SocialMediaPage] Fetching social media data...');
-        const response = await SocialMediaApiService.getSocialMediaData();
-        console.log('[SocialMediaPage] API Response:', response);
-        
-        const adapted = SocialMediaAdapter.toUI(response);
-        console.log('[SocialMediaPage] Adapted Data:', adapted);
-        
-        setSocialMediaData(adapted);
-      } catch (error) {
-        console.error('[SocialMediaPage] Error fetching social media data:', error);
-      } finally {
-        setLoading(false);
+    fetchData();
+  }, [refreshKey]);
+
+  // Auto-refresh mechanism - polls sessionStorage for updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const shouldRefresh = sessionStorage.getItem('social-media-data-updated');
+      if (shouldRefresh === 'true') {
+        console.log('=== SOCIAL MEDIA DATA UPDATED - REFETCHING ===');
+        sessionStorage.removeItem('social-media-data-updated');
+        setRefreshKey((prev) => prev + 1);
+      }
+    }, 500); // Poll every 500ms
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Also refresh when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const shouldRefresh = sessionStorage.getItem('social-media-data-updated');
+        if (shouldRefresh === 'true') {
+          console.log('=== PAGE VISIBLE - REFETCHING SOCIAL MEDIA DATA ===');
+          sessionStorage.removeItem('social-media-data-updated');
+          setRefreshKey((prev) => prev + 1);
+        }
       }
     };
 
-    fetchData();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
-  const handleSave = () => {
-    console.log('[SocialMediaPage] Save button clicked');
-    // Placeholder for save functionality
-    alert('Social network links saved!');
-  };
 
   if (loading) {
     return (
@@ -76,26 +105,13 @@ export default function SocialMediaPage() {
       <SocialMediaHeader />
       
       {/* Main Content */}
-      <main className="flex-1 p-4 pb-28">
+      <main className="flex-1 p-4">
         <div className="flex flex-col gap-6">
           {socialMediaData.groups.map((group) => (
             <SocialMediaGroupCard key={group.category} group={group} />
           ))}
         </div>
       </main>
-
-      {/* Fixed Footer with Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#D4D8DD] px-6 py-6">
-        <button
-          onClick={handleSave}
-          className="w-full h-14 bg-gradient-to-r from-[#136DEC] to-[#3B82F6] text-white text-lg font-bold rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2.5"
-        >
-          <span className="material-icons" style={{ fontSize: '24px' }}>
-            save
-          </span>
-          <span>Save Social Network Links</span>
-        </button>
-      </div>
     </div>
   );
 }

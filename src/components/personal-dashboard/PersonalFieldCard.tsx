@@ -30,7 +30,7 @@ export function PersonalFieldCard({
   const [editedValue, setEditedValue] = useState(value);
 
   const handleSave = () => {
-    if (editedValue.trim() && editedValue !== value) {
+    if (editedValue.trim() !== value) {
       onValueChange(editedValue.trim());
     }
     setIsEditing(false);
@@ -44,89 +44,82 @@ export function PersonalFieldCard({
   return (
     <div
       {...draggableProps}
-      className={`bg-white rounded-[16px] p-4 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] transition-shadow ${
-        isDragging ? 'shadow-[0px_12px_32px_0px_rgba(0,0,0,0.15)]' : ''
+      className={`bg-white rounded-[20px] p-5 shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] transition-all duration-200 border border-gray-100 ${
+        isDragging ? 'shadow-[0px_8px_24px_0px_rgba(0,0,0,0.16)] scale-[1.02]' : ''
       }`}
     >
-      <div className="flex items-start gap-3">
-        {/* Toggle Switch */}
-        <div className="flex-shrink-0 mt-1">
-          <div className="transform scale-75">
-            <ToggleSwitch
-              checked={enabled}
-              onChange={onToggle}
-              size="sm"
-            />
-          </div>
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 mt-2">
+          <ToggleSwitch checked={enabled} onChange={onToggle} size="sm" />
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Label */}
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-bold text-gray-900 text-sm pointer-events-none">{label}</h4>
-            {!isEditing && (
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="opacity-60 hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded active:scale-90 touch-manipulation"
-                aria-label="Edit value"
-              >
-                <span className="material-icons text-gray-500 text-base pointer-events-none">edit</span>
-              </button>
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pointer-events-none">
+                {label}
+              </label>
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-1 px-2 py-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all active:scale-95 touch-manipulation"
+                  aria-label="Edit value"
+                >
+                  <span className="material-icons text-sm pointer-events-none">edit</span>
+                  <span className="text-xs font-medium pointer-events-none">Edit</span>
+                </button>
+              )}
+            </div>
+
+            {isEditing ? (
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 space-y-3">
+                <textarea
+                  value={editedValue}
+                  onChange={(e) => setEditedValue(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Escape') handleCancel(); }}
+                  className="w-full text-sm text-gray-900 bg-white border-2 border-blue-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80px] resize-none placeholder-gray-400"
+                  autoFocus
+                  placeholder="Enter value..."
+                />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 active:scale-95 transition-all shadow-sm touch-manipulation"
+                  >
+                    <span className="material-icons text-base">check</span>
+                    <span>Save</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-white text-gray-700 text-sm rounded-lg font-medium hover:bg-gray-50 active:scale-95 transition-all border border-gray-300 touch-manipulation"
+                  >
+                    <span className="material-icons text-base">close</span>
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <p className="text-sm text-gray-700 leading-relaxed break-words pointer-events-none">
+                  {value || 'No value provided'}
+                </p>
+              </div>
             )}
           </div>
-
-          {/* Description */}
-          <p className="text-[11px] text-gray-500 mb-2 pointer-events-none">{description}</p>
-
-          {/* Value */}
-          {isEditing ? (
-            <div className="space-y-2">
-              <textarea
-                value={editedValue}
-                onChange={(e) => setEditedValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') handleCancel();
-                }}
-                className="w-full text-sm text-gray-700 bg-blue-50 border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px] resize-none"
-                autoFocus
-                placeholder="Enter value"
-              />
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg font-medium hover:bg-blue-700 active:scale-95 transition-all touch-manipulation"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs rounded-lg font-medium hover:bg-gray-300 active:scale-95 transition-all touch-manipulation"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-700 leading-relaxed break-words pointer-events-none">
-              {value || 'No value provided'}
-            </p>
-          )}
         </div>
 
-        {/* Drag Handle */}
         <div
           {...dragHandleProps}
-          className="flex-shrink-0 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors mt-1"
+          className="flex-shrink-0 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors hover:bg-gray-100 rounded-lg p-2"
           aria-label="Drag to reorder"
         >
-          <div className="flex flex-col items-center gap-0.5">
-            <div className="w-1 h-1 bg-current rounded-full"></div>
-            <div className="w-1 h-1 bg-current rounded-full"></div>
-            <div className="w-1 h-1 bg-current rounded-full"></div>
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-1.5 h-1.5 bg-current rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-current rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-current rounded-full"></div>
           </div>
         </div>
       </div>

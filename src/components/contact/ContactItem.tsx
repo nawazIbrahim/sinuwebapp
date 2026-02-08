@@ -38,8 +38,9 @@ export function ContactItem({ contact }: ContactItemProps) {
         style={{ backgroundColor: contact.iconBgColor }}
       >
         <span
-          className="material-symbols-outlined text-2xl"
-          style={{ color: contact.iconColor }}
+          className="material-icons"
+          style={{ fontSize: '24px', color: contact.iconColor }}
+          aria-hidden
         >
           {contact.icon}
         </span>
@@ -57,7 +58,7 @@ export function ContactItem({ contact }: ContactItemProps) {
             aria-label="Copy"
             title={copied ? 'Copied!' : 'Copy'}
           >
-            <span className="material-symbols-outlined text-gray-600 text-xl">
+            <span className="material-icons text-gray-600" style={{ fontSize: '20px' }}>
               {copied ? 'check' : 'content_copy'}
             </span>
           </button>
@@ -74,13 +75,15 @@ export function ContactItem({ contact }: ContactItemProps) {
         style={{
           backgroundColor: contact.actionButtonColor,
         }}
-        aria-label={`${contact.field} ${contact.label}`}
+        aria-label={contact.canCall ? 'Call' : contact.field === 'email' ? 'Send email' : 'Open'}
       >
         <span
-          className="material-symbols-outlined text-2xl"
-          style={{ 
-            color: contact.isPrimary ? '#FFFFFF' : '#DC2626' 
+          className="material-icons"
+          style={{
+            fontSize: '24px',
+            color: contact.isPrimary ? '#FFFFFF' : '#DC2626',
           }}
+          aria-hidden
         >
           {contact.actionIcon}
         </span>

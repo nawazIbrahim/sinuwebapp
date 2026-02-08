@@ -101,7 +101,7 @@ export default function ProfilePage() {
 
   if (isLoading || !profileData) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#94a3b8] to-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#94a3b8] flex items-center justify-center">
         <div className="text-white text-lg">Loading...</div>
       </div>
     );
@@ -110,7 +110,7 @@ export default function ProfilePage() {
   const { profile, contactIcons, groups } = profileData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#94a3b8] to-white">
+    <div className="min-h-screen bg-[#94a3b8]">
       <div className="max-w-md mx-auto relative">
         {/* Header Section */}
         <ProfileHeader

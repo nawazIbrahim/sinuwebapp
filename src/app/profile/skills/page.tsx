@@ -17,26 +17,60 @@ import { AdaptedSkillsData } from '@/types/skills';
 export default function SkillsPage() {
   const [skillsData, setSkillsData] = useState<AdaptedSkillsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
+  // Extracted fetch function for reuse
+  const fetchData = async () => {
+    try {
+      console.log('=== SKILLS PAGE LOADING ===');
+      const response = await SkillsApiService.getSkillsData();
+      console.log('[SkillsPage] API Response:', response);
+      
+      const adapted = SkillsAdapter.toUI(response);
+      console.log('[SkillsPage] Adapted Data:', adapted);
+      
+      setSkillsData(adapted);
+    } catch (error) {
+      console.error('[SkillsPage] Error fetching skills data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load and refresh on refreshKey change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('[SkillsPage] Fetching skills data...');
-        const response = await SkillsApiService.getSkillsData();
-        console.log('[SkillsPage] API Response:', response);
-        
-        const adapted = SkillsAdapter.toUI(response);
-        console.log('[SkillsPage] Adapted Data:', adapted);
-        
-        setSkillsData(adapted);
-      } catch (error) {
-        console.error('[SkillsPage] Error fetching skills data:', error);
-      } finally {
-        setLoading(false);
+    fetchData();
+  }, [refreshKey]);
+
+  // Auto-refresh mechanism - polls sessionStorage for updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const shouldRefresh = sessionStorage.getItem('skills-data-updated');
+      if (shouldRefresh === 'true') {
+        console.log('=== SKILLS DATA UPDATED - REFETCHING ===');
+        sessionStorage.removeItem('skills-data-updated');
+        setRefreshKey((prev) => prev + 1);
+      }
+    }, 500); // Poll every 500ms
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Also refresh when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const shouldRefresh = sessionStorage.getItem('skills-data-updated');
+        if (shouldRefresh === 'true') {
+          console.log('=== PAGE VISIBLE - REFETCHING SKILLS DATA ===');
+          sessionStorage.removeItem('skills-data-updated');
+          setRefreshKey((prev) => prev + 1);
+        }
       }
     };
 
-    fetchData();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   if (loading) {

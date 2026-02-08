@@ -9,8 +9,13 @@ export function ProfessionalHeader() {
     router.push('/profile');
   };
 
+  const handleSettings = () => {
+    router.push('/profile/professional/dashboard');
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-gray-200 border-b border-gray-200 shadow-sm px-4 h-16 flex items-center gap-20">
+    <header className="sticky top-0 z-50 bg-gray-200 border-b border-gray-200 shadow-sm px-4 h-16 flex items-center justify-between">
+      <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={handleBack}
@@ -19,7 +24,18 @@ export function ProfessionalHeader() {
         >
           <span className="material-symbols-outlined text-gray-800 pointer-events-none">arrow_back</span>
         </button>
-      <h1 className="text-lg font-bold text-gray-900">Professional Profile</h1>
+        <h1 className="text-lg font-bold text-gray-900">Professional Profile</h1>
+      </div>
+      
+      {/* Settings Button */}
+      <button
+        type="button"
+        onClick={handleSettings}
+        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors active:scale-95 touch-manipulation"
+        aria-label="Settings"
+      >
+        <span className="material-symbols-outlined text-gray-800 pointer-events-none">settings</span>
+      </button>
     </header>
   );
 }

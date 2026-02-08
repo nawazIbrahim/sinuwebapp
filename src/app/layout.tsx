@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Preloader } from '@/components/preloader/Preloader';
 
 export const metadata: Metadata = {
   title: 'MyDigiLink - Digital Profile',
@@ -37,7 +38,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Preloader />
+        {children}
+      </body>
     </html>
   );
 }

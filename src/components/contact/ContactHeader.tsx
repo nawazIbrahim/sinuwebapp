@@ -22,9 +22,12 @@ export function ContactHeader() {
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors touch-manipulation z-10"
           aria-label="Go back"
         >
-          <span className="material-symbols-outlined text-gray-800 pointer-events-none">arrow_back</span>
+          <span className="material-symbols-outlined text-gray-800 pointer-events-none text-2xl">arrow_back</span>
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Contact Details</h1>
+        <div className="flex items-center gap-2">
+          <span className="material-icons text-[#136DEC] text-2xl" aria-hidden>contact_phone</span>
+          <h1 className="text-lg font-bold text-gray-900">Contact Details</h1>
+        </div>
       </div>
       
       {/* Settings Button */}
@@ -34,7 +37,7 @@ export function ContactHeader() {
         className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors active:scale-95 touch-manipulation"
         aria-label="Settings"
       >
-        <span className="material-symbols-outlined text-gray-800 pointer-events-none">settings</span>
+        <span className="material-symbols-outlined text-gray-800 pointer-events-none text-2xl">settings</span>
       </button>
     </header>
   );

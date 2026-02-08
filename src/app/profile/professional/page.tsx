@@ -10,32 +10,56 @@ import type { AdaptedProfessionalData } from '@/types/professional';
 export default function ProfessionalPage() {
   const [professionalData, setProfessionalData] = useState<AdaptedProfessionalData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch data on mount
-  useEffect(() => {
-    const loadProfessional = async () => {
-      console.log('=== PROFESSIONAL PAGE LOADING ===');
-      setIsLoading(true);
+  const loadProfessional = async () => {
+    console.log('=== PROFESSIONAL PAGE LOADING ===');
+    setIsLoading(true);
+    
+    try {
+      // Fetch data from API
+      const apiResponse = await ProfessionalApiService.getProfessionalData();
+      console.log('API Response - fieldList:', apiResponse.data.fieldList.length);
       
-      try {
-        // Fetch data from API
-        const apiResponse = await ProfessionalApiService.getProfessionalData();
-        console.log('API Response - fieldList:', apiResponse.data.fieldList.length);
-        
-        // Adapt API data to UI-ready format
-        const adapted = ProfessionalAdapter.adapt(apiResponse);
-        console.log('Adapted - fields count:', adapted.fields.length);
-        
-        setProfessionalData(adapted);
-      } catch (error) {
-        console.error('Error loading professional:', error);
-      } finally {
-        setIsLoading(false);
+      // Adapt API data to UI-ready format
+      const adapted = ProfessionalAdapter.adapt(apiResponse);
+      console.log('Adapted - fields count:', adapted.fields.length);
+      
+      setProfessionalData(adapted);
+    } catch (error) {
+      console.error('Error loading professional:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProfessional();
+  }, [refreshKey]);
+
+  // Check for updates from dashboard
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const shouldRefresh = sessionStorage.getItem('professional-data-updated');
+      if (shouldRefresh === 'true') {
+        console.log('=== PROFESSIONAL DATA UPDATED - REFETCHING ===');
+        sessionStorage.removeItem('professional-data-updated');
+        setRefreshKey(prev => prev + 1);
       }
     };
+    checkForUpdates();
+    const interval = setInterval(checkForUpdates, 500);
+    return () => clearInterval(interval);
+  }, []);
 
-    loadProfessional();
-  }, []); // Refetch on mount
+  // Refresh on page visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) setRefreshKey(prev => prev + 1);
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   if (isLoading || !professionalData) {
     return (

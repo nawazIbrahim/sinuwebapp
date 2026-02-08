@@ -17,26 +17,60 @@ import { AdaptedGalleryData } from '@/types/gallery';
 export default function GalleryPage() {
   const [galleryData, setGalleryData] = useState<AdaptedGalleryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
+  // Extracted fetch function for reuse
+  const fetchData = async () => {
+    try {
+      console.log('=== GALLERY PAGE LOADING ===');
+      const response = await GalleryApiService.getGalleryData();
+      console.log('[GalleryPage] API Response:', response);
+      
+      const adapted = GalleryAdapter.toUI(response);
+      console.log('[GalleryPage] Adapted Data:', adapted);
+      
+      setGalleryData(adapted);
+    } catch (error) {
+      console.error('[GalleryPage] Error fetching gallery data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load and refresh on refreshKey change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('[GalleryPage] Fetching gallery data...');
-        const response = await GalleryApiService.getGalleryData();
-        console.log('[GalleryPage] API Response:', response);
-        
-        const adapted = GalleryAdapter.toUI(response);
-        console.log('[GalleryPage] Adapted Data:', adapted);
-        
-        setGalleryData(adapted);
-      } catch (error) {
-        console.error('[GalleryPage] Error fetching gallery data:', error);
-      } finally {
-        setLoading(false);
+    fetchData();
+  }, [refreshKey]);
+
+  // Auto-refresh mechanism - polls sessionStorage for updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const shouldRefresh = sessionStorage.getItem('gallery-data-updated');
+      if (shouldRefresh === 'true') {
+        console.log('=== GALLERY DATA UPDATED - REFETCHING ===');
+        sessionStorage.removeItem('gallery-data-updated');
+        setRefreshKey((prev) => prev + 1);
+      }
+    }, 500); // Poll every 500ms
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Also refresh when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const shouldRefresh = sessionStorage.getItem('gallery-data-updated');
+        if (shouldRefresh === 'true') {
+          console.log('=== PAGE VISIBLE - REFETCHING GALLERY DATA ===');
+          sessionStorage.removeItem('gallery-data-updated');
+          setRefreshKey((prev) => prev + 1);
+        }
       }
     };
 
-    fetchData();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   if (loading) {
